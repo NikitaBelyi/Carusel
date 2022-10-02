@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .main-img {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+            margin-right: 50px;
+            margin-left: 50px;
+            height: 250px;
+        }
+        .carousel {
+            display: flex;
+            justify-content: center;
+
+        }
+        .img__preview {
+            cursor: pointer;
+            margin-right: 20px;
+            height: 100px;
+            opacity: .8;
+            transition: opacity .2s;
+        }
+        .img__preview:hover {
+            opacity: 1;
+            transition: opacity .2s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="left" data-set="left"><<</button>
+        <div class="main-img">
+            <img id="img__main" />
+        </div>
+        <button class="right" data-set="right">>></button>
+    </div>
+    <div class="carousel">
+
+    </div>
+
+    <script>
+        const fetchData = ['/1.png', '/2.png', '/3.png', '/4.png', '/5.png', '/6.png'];
+        const app = {
+            items: null,
+            urlToImages: './src/assets/img',
+            selected: null,
+            mainImg: null,
+            carouselContainer: null,
+            i: 0,
+            mainContainer: null,
+
+            init(data) {
+                this.items = data;
+                this.selected = this.items[0];
+                this.mainImg = document.querySelector('#img__main');
+                this.carouselContainer = document.querySelector('.carousel');
+                this.carouselContainer.addEventListener('click', this.clickHandler.bind(this));
+                this.mainContainer = document.querySelector('.container')
+                this.mainContainer.addEventListener('click', this.clickRightLeft.bind(this))
+                this.render();
+                this.createCarousel();
+            },
+
+            createCarousel() {
+                let accum = '';
+                this.items.forEach(item => {
+                    accum += `<img 
+                    src="${ this.urlToImages + item }"
+                    class="img__preview"
+                    data-url="${ item }"
+                    />` 
+                });
+                this.carouselContainer.innerHTML = accum;
+            },
+            changeImg(url) {
+                this.selected = url
+                this.render()
+            },
+
+            render() {
+                const url = this.urlToImages + this.selected;
+                this.mainImg.src = url;
+            },
+            clickHandler(event) {
+                if (event.target.tagName === 'IMG') {
+                    const url = event.target.dataset.url;
+                    this.changeImg(url)
+                };
+            },
+            clickRightLeft(event) {
+                if (event.target.dataset.set === 'right') {
+                    this.i++;
+
+                    if (!fetchData[this.i]) {
+                    this.i = 0;
+                    }
+                } 
+                if (event.target.dataset.set === 'left') {
+                    this.i--;
+                    if (!fetchData[this.i]) {
+                        this.i = 5;
+                    }
+                }
+
+                this.changeImg(fetchData[this.i])
+            }
+
+        };
+        app.init(fetchData);
+    </script>
+</body>
+</html>
